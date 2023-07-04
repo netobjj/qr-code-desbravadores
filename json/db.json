@@ -1,0 +1,14 @@
+{
+    "clubes": [
+        {
+            "id": "RmkfFSladE",
+            "nome": "Missionários da Fé",
+            "campo": "Campo1"
+        },
+        {
+            "id": "D135tId708s",
+            "nome": "Unidos por Jesus",
+            "campo": "Campo2"
+        }
+    ]
+}
