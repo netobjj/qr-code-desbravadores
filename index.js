@@ -1,24 +1,5 @@
+
 const canvas = document.getElementById("canvas");
-
-/* const fetchContentSvg = (src) => {
-    fetch(src)
-        .then(response => response.text())
-        .then(response => {
-            console.log(response)
-            return response;
-            
-            //console.log(response)
-            const span = document.createElement('span');
-            span.innerHTML = response;
-
-             const inlineSvg = span.getElementsByTagName('svg')[0];
-            const new_div = document.createElement("div");
-            new_div.setAttribute("class", "div-item-svg");
-            new_div.append(inlineSvg)
-            image.parentNode.replaceChild(new_div, image);
-            return true;
-        })
-} */
 
 function create_qr_code(data_url) {
     const qrCode = new QRCodeStyling({
@@ -48,51 +29,70 @@ function create_qr_code(data_url) {
     //qrCode.download({ name: data_url.split("?")[1] , extension: "svg" });
 }
 
-function create_el(el, value = "", className = "", data_custom = "") {
+function create_el(el, value = "", className = "", id = "", data_custom_array = []) {
     const new_el = document.createElement(el);
     if (value != "") new_el.setAttribute("value", value)
     if (className != "") new_el.setAttribute("class", className)
+    if (id != "") new_el.setAttribute("id", id)
+
+    data_custom_array.forEach(vl => {
+        new_el.setAttribute(vl.data, vl.value);
+    })
+    return new_el;
 }
 
 
 const btn_create = document.getElementById('btn_create');
 btn_create.addEventListener('click', async () => {
     // fecth json
-    const res = await fetch('files/db.json');
+    const res = await fetch('json/db.json');
     const data = await res.json();
     const arr_clubes = data.clubes;
-    const src_model_img = "src/imgs/modelo_frente.svg"
+    const src_model_img = "images/modelo_frente.svg"
 
     // to through datas
     let contador_div_group = 1;
-    const fisrt_div_group = document.createElement("div");
-    fisrt_div_group.setAttribute("class", "group")
-    fisrt_div_group.setAttribute("div-group", '1')
-    let actually_div_group = fisrt_div_group;
+    let contador_div_el = 0;
 
+    const fisrt_div_group = create_el("div", "", "group", "", [{ data: "id", value: "1" }]);
+    let text_model_svg = await fetch(src_model_img).then(response => response.text())
+    canvas.append(fisrt_div_group)
+    let actually_div_group = fisrt_div_group;
+    
     arr_clubes.forEach(async (element, index, arr) => {
         let id = element.id;
         let nome = element.nome;
         let campo = element.campo;
-
         
-        if (contador_div_group % 10 == 0) {
-            actually_div_group = document.createElement("div")
-            // criar nova divgroup
+        
+        if (contador_div_el > 0 && contador_div_el % 10 == 0) {
+            contador_div_group++;
+            contador_div_el = 1;
+            actually_div_group = create_el("div", "", "group", "", [{ data: "id", value: contador_div_group }]);
+            canvas.append(actually_div_group);
         } else {
-            // divgroup continua igual
+            contador_div_el++;
         }
 
-        canvas.append()
+        actually_div_group.innerHTML += text_model_svg;
+        //console.log("El " + contador_div_el) //console.log("Gr " + contador_div_group)
 
-        let text_model_svg = await fetch(src_model_img).then(response => response.text())
-        console.log(resp)
+                
+        /* 
+        let div_row1;
+        let div_row2;
+        if (contador_div_el == 1) {
+            div_row1 = create_el("div", "", "div-row", [{ data: "div-row", value: "1" }])
+            div_row2 = create_el("div", "", "div-row", [{ data: "div-row", value: "2" }])
+            actually_div_group.append(div_row1)
+            actually_div_group.append(div_row2)
+        } */
 
         //let url = encodeURI(`https://ranking.camporionline.org/validate?id=${id}&clube=${nome.replace(" ", "_")}&campo=${campo}`);
         //create_qr_code(url)
 
         //let new_img = document.createElement("img");
-        //new_img.setAttribute("src", "src/imgs/modelo_frente.svg");
+        //new_img.setAttribute("src", "images/modelo_frente.svg");
         //canvas.append(new_img)
 
 
