@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("canvas");
 
-function create_qr_code(data_url) {
+function create_qr_code(data_url, index_file_svg) {
     const qrCode = new QRCodeStyling({
         width: 50,
         height: 50,
@@ -14,19 +14,33 @@ function create_qr_code(data_url) {
         cornersSquareOptions: { type: "extra-rounded", color: "#000000" },
         cornersDotOptions: { type: "dot", color: "#000000" },
     });
+    qrCode.download({ name: index_file_svg, extension: "svg" });
+
+
+    let svg_of_qr = fetch(`images/crachas/${index_file_svg}.svg`).then(res => res.text())
+    svg_of_qr = svg_of_qr.toString().replace(`<image href="qr_teste.svg" x="13" y="44" height="30" width="30" />`, `<image href="/images/qr-codes/qr_${index_file_svg}.svg" x="13" y="44" height="30" width="30" />`)
+
+    
     let new_div = document.createElement("div");
+    new_div.innerHTML = svg_of_qr;
+    return qrCode
+    new_svg_qr_code = document.getElementById("qr_code_svg");
+    
+    new_svg_qr_code.setAttributeNS(null, "x", "13");
+    new_svg_qr_code.setAttributeNS(null, "y", "44");
+    new_svg_qr_code.setAttributeNS(null, "height", "30");
+    new_svg_qr_code.setAttributeNS(null, "width", "30");
+
+    qrCode.append(new_svg_qr_code)
     canvas.append(new_div);
 
-    let model_svg = document.getElementById('model_svg')
+
+    /*let model_svg = document.getElementById('model_svg')
     let local_qr_code_svg = document.getElementById('qr_code_svg');
     local_qr_code_svg.innerHTML = ""
-
-
-    qrCode.append(local_qr_code_svg);
-    qr_code_svg.setAttributeNS(null, "x", "11")
-    qr_code_svg.setAttributeNS(null, "y", "45")
-
-    //qrCode.download({ name: data_url.split("?")[1] , extension: "svg" });
+    qrCode.append(local_qr_code_svg); */
+    
+    return qrCode;
 }
 
 function create_el(el, value = "", className = "", id = "", data_custom_array = []) {
@@ -63,7 +77,20 @@ btn_create.addEventListener('click', async () => {
         let id = element.id;
         let nome = element.nome;
         let campo = element.campo;
-        
+
+        // alterar text_model 
+        // qrcode
+        let url = encodeURI(`https://ranking.camporionline.org/validate?id=${id}&clube=${nome.replace(" ", "_")}&campo=${campo}`);
+        let qrCode = create_qr_code(url, (index + 1));
+        actually_div_group.append(qrCode)
+        console.log(qrCode)
+
+        // nome
+
+
+
+
+
         
         if (contador_div_el > 0 && contador_div_el % 10 == 0) {
             contador_div_group++;
@@ -88,7 +115,6 @@ btn_create.addEventListener('click', async () => {
             actually_div_group.append(div_row2)
         } */
 
-        //let url = encodeURI(`https://ranking.camporionline.org/validate?id=${id}&clube=${nome.replace(" ", "_")}&campo=${campo}`);
         //create_qr_code(url)
 
         //let new_img = document.createElement("img");
