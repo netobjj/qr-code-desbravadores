@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("canvas");
 
-function create_qr_code(data_url, index_file_svg) {
+async function create_qr_code(data_url, index_file_svg) {
     const qrCode = new QRCodeStyling({
         width: 50,
         height: 50,
@@ -16,14 +16,14 @@ function create_qr_code(data_url, index_file_svg) {
     });
     qrCode.download({ name: index_file_svg, extension: "svg" });
 
-
-    let svg_of_qr = fetch(`images/crachas/${index_file_svg}.svg`).then(res => res.text())
-    svg_of_qr = svg_of_qr.toString().replace(`<image href="qr_teste.svg" x="13" y="44" height="30" width="30" />`, `<image href="/images/qr-codes/qr_${index_file_svg}.svg" x="13" y="44" height="30" width="30" />`)
-
+    let svg_of_qr = await fetch(`images/name_tags/${index_file_svg}.svg`).then(res => res.text())
     
-    let new_div = document.createElement("div");
-    new_div.innerHTML = svg_of_qr;
-    return qrCode
+    svg_of_qr = svg_of_qr.toString().replace(`<image href="qr_code.svg" x="13" y="44" height="30" width="30" />`, `<image href="/images/qr_codes/${index_file_svg}.svg" x="13" y="44" height="30" width="30" />`)
+    console.log(svg_of_qr)
+    
+    return svg_of_qr;
+        
+
     new_svg_qr_code = document.getElementById("qr_code_svg");
     
     new_svg_qr_code.setAttributeNS(null, "x", "13");
@@ -70,6 +70,7 @@ btn_create.addEventListener('click', async () => {
 
     const fisrt_div_group = create_el("div", "", "group", "", [{ data: "id", value: "1" }]);
     let text_model_svg = await fetch(src_model_img).then(response => response.text())
+    //console.log(text_model_svg)
     canvas.append(fisrt_div_group)
     let actually_div_group = fisrt_div_group;
     
@@ -81,15 +82,10 @@ btn_create.addEventListener('click', async () => {
         // alterar text_model 
         // qrcode
         let url = encodeURI(`https://ranking.camporionline.org/validate?id=${id}&clube=${nome.replace(" ", "_")}&campo=${campo}`);
-        let qrCode = create_qr_code(url, (index + 1));
-        actually_div_group.append(qrCode)
-        console.log(qrCode)
+        let qrCode = await create_qr_code(url, (index + 1));
+        actually_div_group.innerHTML += qrCode;
 
         // nome
-
-
-
-
 
         
         if (contador_div_el > 0 && contador_div_el % 10 == 0) {
@@ -101,7 +97,6 @@ btn_create.addEventListener('click', async () => {
             contador_div_el++;
         }
 
-        actually_div_group.innerHTML += text_model_svg;
         //console.log("El " + contador_div_el) //console.log("Gr " + contador_div_group)
 
                 
